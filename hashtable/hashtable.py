@@ -7,7 +7,6 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
-
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
@@ -23,7 +22,6 @@ class HashTable:
         self.capacity = capacity
         self.table = [None] * self.capacity
 
-
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
@@ -34,7 +32,7 @@ class HashTable:
 
         Implement this.
         """
-        pass
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -86,8 +84,16 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.table[index] = value
 
+        if (self.table[index] is None):
+            self.table[index] = HashTableEntry(key, value)
+        elif (self.table[index].next is None):
+            self.table[index].next = HashTableEntry(key, value)
+        else:
+            node = self.table[index]
+            while (node.next is not None):
+                node = self.table[index].next
+            node.next = HashTableEntry(key, value)
 
     def delete(self, key):
         """
@@ -98,7 +104,21 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.table[index] = None
+
+        if (self.table[index].key == None):
+            return "Value is not in List"
+        if (self.table[index].key is key):
+            self.table[index].value = None
+            return
+        else:
+            node = self.table[index]
+            while (node.next is not None):
+                if (node.key is key):
+                    self.table[index].value = None
+                    return
+                node = self.table[index].next
+            if (self.table[index].key == None):
+                return "Value is not in List"
 
 
     def get(self, key):
@@ -110,8 +130,12 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        value = self.table[index]
-        return value
+        cur = self.table[index]
+
+        while cur is not None:
+            if cur.key == key:
+                return cur.value
+            cur = cur.next
 
 
     def resize(self, new_capacity):
